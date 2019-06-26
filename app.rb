@@ -31,13 +31,8 @@ class OctoprintHomeBusApp < HomeBusApp
   end
 
   def work!
-    pp @octoprint.api
-#    connection = @octoprint.api.connection
     printer = @octoprint.api.printer
     job = @octoprint.api.job
-#    state = @octoprint.api.state
-
-    pp printer, job
 
     substatus = 'unknown'
     substatus = 'ready' if printer["state"]["flags"]["ready"]

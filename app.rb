@@ -5,6 +5,8 @@ require 'dotenv'
 require 'octoprint'
 require 'json'
 
+# http://docs.octoprint.org/en/master/api/index.html
+
 class OctoprintHomeBusApp < HomeBusApp
   def initialize(options)
     @options = options
@@ -34,19 +36,12 @@ class OctoprintHomeBusApp < HomeBusApp
     printer = @octoprint.api.printer
     job = @octoprint.api.job
 
-    substatus = 'unknown'
-    substatus = 'ready' if printer["state"]["flags"]["ready"]
-    substatus = 'printing' if printer["state"]["flags"]["printing"]
-    substatus = 'paused' if printer["state"]["flags"]["paused"]
-    substatus = 'error' if printer["state"]["flags"]["error"]
-
     state = job["state"]
     file = job["job"]["file"]["name"]
     completion = job["progress"]["completion"]
 
-    return if substatus == @old_substatus && state == @old_state && file == @old_file && completion == @old_completion
+    return if state == @old_state && file == @old_file && completion == @old_completion
 
-    @old_substatus = substatus
     @old_state = state
     @old_file = file
     @old_completion = completion
@@ -55,12 +50,14 @@ class OctoprintHomeBusApp < HomeBusApp
       id: @uuid,
       timestamp: Time.now.to_i,
       status: {
-        state: state,
-        substatus: substatus
+        state: state
       },
       job: {
         file: file,
-        progress: completion
+        progress: completion,
+        print_time: job["progress"]["printTime"],
+        print_time_left: job["progress"]["printTimeLeft"],
+        filament_length: job["job"]["filament"]
       },
       temperatures: {
         tool0_actual: printer["temperature"]["tool0"]["actual"],

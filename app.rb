@@ -33,43 +33,51 @@ class OctoprintHomeBusApp < HomeBusApp
   end
 
   def work!
-    printer = @octoprint.api.printer
-    job = @octoprint.api.job
+    begin
+      printer = @octoprint.api.printer
+      job = @octoprint.api.job
+    rescue
+      if @options[:verbose]
+        puts "Failure conacting server at #{@server_url}"
+      end
+    end
 
-    state = job["state"]
-    file = job["job"]["file"]["name"]
-    completion = job["progress"]["completion"]
+    if printer && job
+      state = job["state"]
+      file = job["job"]["file"]["name"]
+      completion = job["progress"]["completion"]
 
-    return if state == @old_state && file == @old_file && completion == @old_completion
+      return if state == @old_state && file == @old_file && completion == @old_completion
 
-    @old_state = state
-    @old_file = file
-    @old_completion = completion
+      @old_state = state
+      @old_file = file
+      @old_completion = completion
 
-    results = {
-      id: @uuid,
-      timestamp: Time.now.to_i,
-      status: {
-        state: state
-      },
-      job: {
-        file: file,
-        progress: completion,
-        print_time: job["progress"]["printTime"],
-        print_time_left: job["progress"]["printTimeLeft"],
-        filament_length: job["job"]["filament"]
-      },
-      temperatures: {
-        tool0_actual: printer["temperature"]["tool0"]["actual"],
-        tool0_target: printer["temperature"]["tool0"]["target"],
-        bed_actual: printer["temperature"]["bed"]["actual"],
-        bed_target: printer["temperature"]["bed"]["target"]
+      results = {
+        id: @uuid,
+        timestamp: Time.now.to_i,
+        status: {
+          state: state
+        },
+        job: {
+          file: file,
+          progress: completion,
+          print_time: job["progress"]["printTime"],
+          print_time_left: job["progress"]["printTimeLeft"],
+          filament_length: job["job"]["filament"]
+        },
+        temperatures: {
+          tool0_actual: printer["temperature"]["tool0"]["actual"],
+          tool0_target: printer["temperature"]["tool0"]["target"],
+          bed_actual: printer["temperature"]["bed"]["actual"],
+          bed_target: printer["temperature"]["bed"]["target"]
+        }
       }
-    }
-          
-    @mqtt.publish '/octoprint',
-                  JSON.generate(results),
-                  true
+      
+      @mqtt.publish '/octoprint',
+                    JSON.generate(results),
+                    true
+    end
 
     sleep update_delay
   end
@@ -91,7 +99,7 @@ class OctoprintHomeBusApp < HomeBusApp
   end
 
   def serial_number
-    ''
+    @server_url
   end
 
   def pin

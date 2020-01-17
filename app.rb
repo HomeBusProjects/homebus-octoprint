@@ -74,7 +74,7 @@ class OctoprintHomeBusApp < HomeBusApp
         }
       }
       
-      @mqtt.publish '/octoprint',
+      @mqtt.publish '/homebus/device/' + @uuid,
                     JSON.generate(results),
                     true
     end

@@ -8,6 +8,9 @@ require 'json'
 # http://docs.octoprint.org/en/master/api/index.html
 
 class OctoprintHomeBusApp < HomeBusApp
+  DDC_3DPRINTER = 'org.homebus.experimental.3dprinter'
+  DDC_COMPLETED_JOB = 'org.homebus.experimental.3dprinter-completed-job'
+
   def initialize(options)
     @options = options
 
@@ -55,7 +58,10 @@ class OctoprintHomeBusApp < HomeBusApp
 
       results = {
         id: @uuid,
-        timestamp: Time.now.to_i,
+        timestamp: Time.now.to_i
+      }
+
+      results[DDC_3DPRINTER] = {
         status: {
           state: state
         },
@@ -73,13 +79,39 @@ class OctoprintHomeBusApp < HomeBusApp
           bed_target: printer["temperature"]["bed"]["target"]
         }
       }
-      
-      @mqtt.publish '/homebus/device/' + @uuid,
-                    JSON.generate(results),
-                    true
+
+      publish! DDC_3DPRINTER, results
+
+#      if progress == 100
+#        completed_job
+#      end
     end
 
     sleep update_delay
+  end
+
+  def completed_job
+    job = {
+      id: @uuid,
+      timestamp: Time.now.to_i
+    }
+
+    job[DDC_COMPLETED_JOB] = {
+      state: '',
+      start_time: '',
+      end_time: '',
+      material: [
+        { type: 'filament',
+          quantity: 0,
+          units: 'meters'
+        }
+      ],
+      completed_image: {
+        type: 'image/jpeg'
+      }
+    }
+
+    publish! DDC_COMPLETED_JOB, job
   end
 
   def manufacturer
@@ -114,8 +146,8 @@ class OctoprintHomeBusApp < HomeBusApp
         index: 0,
         accuracy: 0,
         precision: 0,
-        wo_topics: [ '/octoprint' ],
-        ro_topics: [ '/octoprint/cmd' ],
+        wo_topics: [ DDC_3DPRINTER, DDC_COMPLETED_JOB ],
+        ro_topics: [ 'org.homebus.experimental.3dprint-control' ],
         rw_topics: []
       }
     ]

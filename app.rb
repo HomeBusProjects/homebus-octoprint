@@ -56,12 +56,7 @@ class OctoprintHomeBusApp < HomeBusApp
       @old_file = file
       @old_completion = completion
 
-      results = {
-        id: @uuid,
-        timestamp: Time.now.to_i
-      }
-
-      results[DDC_3DPRINTER] = {
+      payload = {
         status: {
           state: state
         },
@@ -77,6 +72,15 @@ class OctoprintHomeBusApp < HomeBusApp
           tool0_target: printer["temperature"]["tool0"]["target"],
           bed_actual: printer["temperature"]["bed"]["actual"],
           bed_target: printer["temperature"]["bed"]["target"]
+        }
+      }
+
+      results = {
+        id: @uuid,
+        timestamp: Time.now.to_i,
+        contents: {
+          ddc: DDC,
+          payload: payload
         }
       }
 

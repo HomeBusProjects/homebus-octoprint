@@ -79,7 +79,7 @@ class OctoprintHomeBusApp < HomeBusApp
         source: @uuid,
         timestamp: Time.now.to_i,
         contents: {
-          ddc: DDC,
+          ddc: DDC_3DPRINTER,
           payload: payload
         }
       }
@@ -95,12 +95,7 @@ class OctoprintHomeBusApp < HomeBusApp
   end
 
   def completed_job
-    job = {
-      id: @uuid,
-      timestamp: Time.now.to_i
-    }
-
-    job[DDC_COMPLETED_JOB] = {
+    payload = {
       state: '',
       start_time: '',
       end_time: '',
@@ -114,6 +109,17 @@ class OctoprintHomeBusApp < HomeBusApp
         type: 'image/jpeg'
       }
     }
+
+
+    job = {
+      source: @uuid,
+      timestamp: Time.now.to_i,
+      contents: {
+        ddc: DDC_COMPLETED_JOB,
+        payload: payload
+      }
+    }
+
 
     publish! DDC_COMPLETED_JOB, job
   end

@@ -76,7 +76,7 @@ class OctoprintHomeBusApp < HomeBusApp
       }
 
       results = {
-        id: @uuid,
+        source: @uuid,
         timestamp: Time.now.to_i,
         contents: {
           ddc: DDC,

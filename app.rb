@@ -75,16 +75,11 @@ class OctoprintHomeBusApp < HomeBusApp
         }
       }
 
-      results = {
-        source: @uuid,
-        timestamp: Time.now.to_i,
-        contents: {
-          ddc: DDC_3DPRINTER,
-          payload: payload
-        }
-      }
+      publish! DDC_3DPRINTER, payload
 
-      publish! DDC_3DPRINTER, results
+      if options[:verbose]
+        puts payload
+      end
 
 #      if progress == 100
 #        completed_job

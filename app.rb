@@ -46,6 +46,8 @@ class OctoprintHomeBusApp < HomeBusApp
     end
 
     if printer && job
+      pp 
+
       state = job["state"]
       file = job["job"]["file"]["name"]
       completion = job["progress"]["completion"]
@@ -81,9 +83,11 @@ class OctoprintHomeBusApp < HomeBusApp
         puts payload
       end
 
+if false
       if progress == 100
         completed_job
       end
+end
     end
 
     sleep update_delay

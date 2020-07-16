@@ -81,19 +81,19 @@ class OctoprintHomeBusApp < HomeBusApp
         puts payload
       end
 
-#      if progress == 100
-#        completed_job
-#      end
+      if progress == 100
+        completed_job
+      end
     end
 
     sleep update_delay
   end
 
-  def completed_job
-    payload = {
-      state: '',
-      start_time: '',
-      end_time: '',
+  def completed_job(job)
+    job_info = {
+      state: job["state"],
+      start_time: 0,
+      end_time: Time.now.to_i,
       material: [
         { type: 'filament',
           quantity: 0,
@@ -101,22 +101,11 @@ class OctoprintHomeBusApp < HomeBusApp
         }
       ],
       completed_image: {
-        type: 'image/jpeg'
+        type: 'image/jpeg',
       }
     }
 
-
-    job = {
-      source: @uuid,
-      timestamp: Time.now.to_i,
-      contents: {
-        ddc: DDC_COMPLETED_JOB,
-        payload: payload
-      }
-    }
-
-
-    publish! DDC_COMPLETED_JOB, job
+    publish! DDC_COMPLETED_JOB, job_info
   end
 
   def manufacturer

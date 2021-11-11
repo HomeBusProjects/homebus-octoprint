@@ -1,13 +1,11 @@
 require 'homebus'
-require 'homebus_app'
-require 'mqtt'
 require 'dotenv'
+
 require 'octoprint'
-require 'json'
 
 # http://docs.octoprint.org/en/master/api/index.html
 
-class OctoprintHomeBusApp < HomeBusApp
+class OctoprintHomebusApp < Homebus::App
   DDC_3DPRINTER = 'org.homebus.experimental.3dprinter'
   DDC_COMPLETED_JOB = 'org.homebus.experimental.3dprinter-completed-job'
 
@@ -24,10 +22,16 @@ class OctoprintHomeBusApp < HomeBusApp
     @old_file = ''
     @old_completion = ''
 
+    @device = Homebus::Device.new(name: "Octoprint server at #w{@server_url}",
+                                  manufacturer: 'Homebus',
+                                  model: 'Octoprint publisher',
+                                  serial_number: @server_url
+                                 )
+
     super
   end
 
-  def update_delay
+  def update_interval
     60
   end
 
@@ -77,7 +81,7 @@ class OctoprintHomeBusApp < HomeBusApp
         }
       }
 
-      publish! DDC_3DPRINTER, payload
+      @device.publish! DDC_3DPRINTER, payload
 
       if options[:verbose]
         puts payload
@@ -90,7 +94,7 @@ if false
 end
     end
 
-    sleep update_delay
+    sleep update_interval
   end
 
   def completed_job(job)
@@ -109,45 +113,18 @@ end
       }
     }
 
-    publish! DDC_COMPLETED_JOB, job_info
+    @device.publish! DDC_COMPLETED_JOB, job_info
   end
 
-  def manufacturer
-    'HomeBus'
-  end
-
-  def model
+  def name
     'Octoprint publisher'
   end
 
-  def friendly_name
-    "Octoprint server at #w{@server_url}"
-  end
-
-  def friendly_location
-    'Hipster hideaway'
-  end
-
-  def serial_number
-    @server_url
-  end
-
-  def pin
-    ''
+  def publishes
+    [ DDC_3DPRINTER, DDC_COMPLETED_JOB ]
   end
 
   def devices
-    [
-      { friendly_name: 'Octoprint',
-        friendly_location: @server_url,
-        update_frequency: update_delay,
-        index: 0,
-        accuracy: 0,
-        precision: 0,
-        wo_topics: [ DDC_3DPRINTER, DDC_COMPLETED_JOB ],
-        ro_topics: [ 'org.homebus.experimental.3dprint-control' ],
-        rw_topics: []
-      }
-    ]
+    [ @device ]
   end
 end

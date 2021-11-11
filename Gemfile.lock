@@ -1,16 +1,8 @@
 GIT
-  remote: git@github.com:HomeBusProjects/ruby-homebus-application.git
-  revision: ddad977a473545fbc1a299d27a739f384b8861e2
-  specs:
-    homebus_app (0.9.1)
-      dotenv
-      mqtt
-
-GIT
   remote: https://github.com/HomeBusProjects/ruby-homebus
-  revision: 64d64f26adf2e82d4c8cb7219bdd534f2275f817
+  revision: 0546f6673fcd47ccc39e91ff930bfe747825143a
   specs:
-    homebus (0.3.1)
+    homebus (0.10.11)
 
 GEM
   remote: https://rubygems.org/
@@ -27,10 +19,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   homebus!
-  homebus_app!
   mqtt
   octoprint_api
 
 BUNDLED WITH
-   2.1.2
+   2.2.29

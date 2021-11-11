@@ -1,6 +1,6 @@
-require 'homebus_app_options'
+require 'homebus'
 
-class OctoprintHomeBusAppOptions < HomeBusAppOptions
+class OctoprintHomebusAppOptions < Homebus::Options
   def app_options(op)
     server_help = 'Server URL, like "https://ummon:5000" or "http://10.0.1.104"'
     apikey_help = 'API key from Octoprint'

@@ -39,7 +39,7 @@ class HomebusOctoprint::App < Homebus::App
   def setup!
     @octoprint = Octoprint.new(@server_url, @api_key)
 
-    @state[:history] ||= Array.new
+    @state.state[:history] ||= Array.new
   end
 
   def work!
@@ -112,7 +112,7 @@ class HomebusOctoprint::App < Homebus::App
     }
 
     
-    @state[:history] = @state[:history].push(job_info).last(10)
+    @state.state[:history] = @state.state[:history].push(job_info).last(10)
     @state.commit!
 
     pp job_info

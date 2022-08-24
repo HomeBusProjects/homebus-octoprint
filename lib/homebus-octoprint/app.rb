@@ -5,9 +5,10 @@ require 'octoprint'
 
 # http://docs.octoprint.org/en/master/api/index.html
 
-class OctoprintHomebusApp < Homebus::App
+class HomebusOctoprint::App < Homebus::App
   DDC_3DPRINTER = 'org.homebus.experimental.3dprinter'
   DDC_COMPLETED_JOB = 'org.homebus.experimental.3dprinter-completed-job'
+  DDC_COMPLETED_JOB_HISTORY = 'org.homebus.experimental.3dprinter-completed-job-history'
 
   def initialize(options)
     @options = options
@@ -22,7 +23,7 @@ class OctoprintHomebusApp < Homebus::App
     @old_file = ''
     @old_completion = ''
 
-    @device = Homebus::Device.new(name: "Octoprint server at #w{@server_url}",
+    @device = Homebus::Device.new(name: "Octoprint server at %w{@server_url}",
                                   manufacturer: 'Homebus',
                                   model: 'Octoprint publisher',
                                   serial_number: @server_url
@@ -37,6 +38,8 @@ class OctoprintHomebusApp < Homebus::App
 
   def setup!
     @octoprint = Octoprint.new(@server_url, @api_key)
+
+    @state[:history] ||= Array.new
   end
 
   def work!
@@ -87,11 +90,9 @@ class OctoprintHomebusApp < Homebus::App
         puts payload
       end
 
-if false
-      if progress == 100
-        completed_job
+      if completion == 100
+        completed_job job
       end
-end
     end
 
     sleep update_interval
@@ -100,20 +101,24 @@ end
   def completed_job(job)
     job_info = {
       state: job["state"],
-      start_time: 0,
+      start_time: Time.now.to_i - job["progress"]["printTime"] ,
       end_time: Time.now.to_i,
       material: [
         { type: 'filament',
-          quantity: 0,
-          units: 'meters'
+          quantity: job["job"]["filament"]["tool0"]["length"],
+          units: 'mm'
         }
-      ],
-      completed_image: {
-        type: 'image/jpeg',
-      }
+      ]
     }
 
+    
+    @state[:history] = @state[:history].push(job_info).last(10)
+    @state.commit!
+
+    pp job_info
+
     @device.publish! DDC_COMPLETED_JOB, job_info
+    @device.publish! DDC_COMPLETED_JOB_HISTORY, @state[:history]
   end
 
   def name
@@ -121,7 +126,7 @@ end
   end
 
   def publishes
-    [ DDC_3DPRINTER, DDC_COMPLETED_JOB ]
+    [ DDC_3DPRINTER, DDC_COMPLETED_JOB, DDC_COMPLETED_JOB_HISTORY ]
   end
 
   def devices

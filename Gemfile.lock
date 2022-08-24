@@ -1,43 +1,35 @@
 GIT
-<<<<<<< HEAD
-=======
-  remote: git@github.com:HomeBusProjects/ruby-homebus-application.git
-  revision: 44834e453a8d2c1c9009364dd5e72994f1a386b3
-  specs:
-    homebus_app (0.9.6)
-      dotenv
-      mqtt
-
-GIT
->>>>>>> 10268ed654c780b4f0a76f443a66e6c397cd975e
   remote: https://github.com/HomeBusProjects/ruby-homebus
-  revision: 0546f6673fcd47ccc39e91ff930bfe747825143a
+  revision: f0fff8e41734fee104259ee626e257a0cadd2eff
+  branch: main
   specs:
-    homebus (0.10.11)
+    homebus (0.30.2)
+      mqtt (~> 0.5.0)
+
+PATH
+  remote: .
+  specs:
+    homebus-octoprint (0.2.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    dotenv (2.7.6)
+    dotenv (2.8.1)
     faraday (0.14.0)
       multipart-post (>= 1.2, < 3)
     mqtt (0.5.0)
-    multipart-post (2.1.1)
+    multipart-post (2.2.3)
     octoprint_api (0.1.0)
       faraday (~> 0.14.0)
 
 PLATFORMS
-  ruby
+  arm64-darwin-21
 
 DEPENDENCIES
   dotenv
   homebus!
-  mqtt
+  homebus-octoprint!
   octoprint_api
 
 BUNDLED WITH
-<<<<<<< HEAD
-   2.2.29
-=======
-   2.2.21
->>>>>>> 10268ed654c780b4f0a76f443a66e6c397cd975e
+   2.3.19

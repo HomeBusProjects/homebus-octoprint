@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'homebus-octoprint/options'
+require 'homebus-octoprint/app'
+
+octo_app_options = HomebusOctoprint::Options.new
+
+octo = HomebusOctoprint::App.new octo_app_options.options
+octo.run!

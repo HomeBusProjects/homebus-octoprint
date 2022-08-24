@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 
+gemspec
+
 gem 'octoprint_api'
-gem 'mqtt'
-gem 'homebus', git: 'https://github.com/HomeBusProjects/ruby-homebus'
+
+gem 'homebus', git: 'https://github.com/HomeBusProjects/ruby-homebus', branch: 'main'
 gem 'dotenv'

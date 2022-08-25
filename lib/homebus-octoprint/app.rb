@@ -118,7 +118,7 @@ class HomebusOctoprint::App < Homebus::App
     pp job_info
 
     @device.publish! DDC_COMPLETED_JOB, job_info
-    @device.publish! DDC_COMPLETED_JOB_HISTORY, @state[:history]
+    @device.publish! DDC_COMPLETED_JOB_HISTORY, @state.state[:history]
   end
 
   def name

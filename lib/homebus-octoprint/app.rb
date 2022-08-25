@@ -23,7 +23,7 @@ class HomebusOctoprint::App < Homebus::App
     @old_file = ''
     @old_completion = ''
 
-    @device = Homebus::Device.new(name: "Octoprint server at %w{@server_url}",
+    @device = Homebus::Device.new(name: "Octoprint server at #w{@server_url}",
                                   manufacturer: 'Homebus',
                                   model: 'Octoprint publisher',
                                   serial_number: @server_url
